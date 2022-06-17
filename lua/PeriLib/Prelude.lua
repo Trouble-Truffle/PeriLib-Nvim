@@ -34,8 +34,13 @@ M.equal = function(a, b)
   return a == b
 end
 
-M.printLn = function(...)
-  print(vim.inspect{...})
+M.showInstances = types.class("Show")
+M.show = function(x)
+  if type(x) == "table" and x.type then
+    return M.switch(x.type, M.showInstances)(x)
+  end
+  return vim.inspect(x)
 end
-
 return M
+
+

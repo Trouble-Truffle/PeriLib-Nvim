@@ -9,7 +9,7 @@ M.functorInstances = Types.class("Functor")
 M.fmap = function(f, x)
   if type(x) == "table" then
     if x.type then
-      return Prelude.switch(x.type, M.functorInstances)
+      return Prelude.switch(x.type, M.functorInstances)(f, x)
     else
       local r = {}
       for k,v in pairs(x) do

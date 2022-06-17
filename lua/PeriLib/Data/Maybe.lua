@@ -4,6 +4,7 @@ local M = {}
 local Types = require("PeriLib.Type")
 local Func = require("PeriLib.Data.Function")
 local Prelude = require("PeriLib.Prelude")
+local Functor = require("PeriLib.Data.Functor")
 
 for k,v in pairs(Types.data("Maybe",
                  {Just = Func.id,
@@ -40,6 +41,14 @@ M.listToMaybe = function(xs)
   end
 end
 
+Prelude.showInstances["Maybe"] = function(x)
+  if M.isJust(x) then
+    return "Just " .. Prelude.show(x.value.value)
+  else
+    return "Nothing"
+  end
+end
+
 Prelude.eqInstances["Maybe"] = function(x, y)
   if M.isJust(x) and M.isJust(y) then
     return Prelude.equal(x.value.value, y.value.value)
@@ -47,6 +56,14 @@ Prelude.eqInstances["Maybe"] = function(x, y)
     return true
   else
     return false
+  end
+end
+
+Functor.functorInstances["Maybe"] = function(f, x)
+  if M.isJust(x) then
+    return M.Just(f(x.value.value))
+  else
+    return M.Nothing
   end
 end
 
