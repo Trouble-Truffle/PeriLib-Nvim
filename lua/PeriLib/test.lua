@@ -1,12 +1,19 @@
-local IO = require "PeriLib.System.IO"
 -- Checks if the functions are working correctly
+--
+local Type = require "PeriLib.Type"
+local Prelude = require "PeriLib.Prelude"
+local Func = require "PeriLib.Data.Function"
+local Oper = require "PeriLib.Operator"
+local Monoid = require "PeriLib.Data.Monoid"
+local Functor = require "PeriLib.Data.Functor"
+local List = require "PeriLib.Data.List"
+local Tuple = require "PeriLib.Data.Tuple"
+local Maybe = require "PeriLib.Data.Maybe"
+local Foldable = require "PeriLib.Data.Foldable"
+local Applicative = require "PeriLib.Control.Applicative"
+local Monad = require "PeriLib.Control.Monad"
+
 return function()
-  local List = require "PeriLib.Data.List"
-  local Oper = require "PeriLib.Operator"
-  local Func = require "PeriLib.Data.Function"
-  local Maybe = require "PeriLib.Data.Maybe"
-  local Prelude = require "PeriLib.Prelude"
-  local Functor = require "PeriLib.Data.Functor"
 
   print "Testing functions..."
 
@@ -49,10 +56,15 @@ return function()
     end
   end
 
+  header "Type"
+  shouldBe("typeof", {
+    {Type.typeOf(2), "number"},
+  })
+
   header "Prelude"
   shouldBe("switch", {
-    { Prelude.switch("Test", { Test = 3, default = 4 }), 3, "With available switch case" },
-    { Prelude.switch("_", { Test = 3, default = 4 }), 4, "With default case" },
+    { Prelude.match("Test", { Test = 3, default = 4 }), 3, "With available switch case" },
+    { Prelude.match("_", { Test = 3, default = 4 }), 4, "With default case" },
   })
 
   shouldBe("equal", {
@@ -80,7 +92,6 @@ return function()
   shouldBe("compose", { { Func.compose(Oper.add(2), Oper.mul(2))(3), 8 } })
 
   header "Data.Monoid"
-  local Monoid = require "PeriLib.Data.Monoid"
   shouldBe("mappend", {
     { Monoid.mappend({ 2, 3 }, { 3, 4 }), { 2, 3, 3, 4 }, "With Lists" },
     { Monoid.mappend({ 2, 3 }, Monoid.mempty), { 2, 3 }, "With List and mempty" },
@@ -152,21 +163,18 @@ return function()
     { List.group({ 1, 1, 1, 2, 2, 3, 2, 2 }), { { 1, 1, 1 }, { 2, 2 }, { 3 }, { 2, 2 } } },
   })
 
-  local Tuple = require "PeriLib.Data.Tuple"
   header "Data.Tuple"
   shouldBe("fst", { { Tuple.fst({ 1, 2 }), 1 } })
   shouldBe("snd", { { Tuple.snd({ 1, 2 }), 2 } })
   shouldBe("swap", { { Tuple.swap({ 1, 2 }), { 2, 1 } } })
   shouldBe("structure", { { Tuple.structure(1, 2), { 1, 2 } } })
 
-  local Foldable = require "PeriLib.Data.Foldable"
   header "Data.Foldable"
   shouldBe("foldl", { { Foldable.foldl(Oper.uncAdd, 1, { 2, 3 }), 6 } })
   shouldBe("foldl1", { { Foldable.foldl1(Oper.uncAdd, { 1, 2, 3 }), 6 } })
   shouldBe("scanl", { { Foldable.scanl(Oper.uncAdd, 1, { 1, 2, 3 }), { 1, 2, 4, 7 } } })
   shouldBe("scanl1", { { Foldable.scanl1(Oper.uncAdd, { 1, 1, 2, 3 }), { 1, 2, 4, 7 } } })
 
-  local Applicative = require "PeriLib.Control.Applicative"
   header "Control.Applicative"
   shouldBe("liftA2", {
     {
@@ -183,7 +191,6 @@ return function()
     { Applicative.alternative({}, {}), {}, "With Both empty" },
   })
 
-  local Monad = require "PeriLib.Control.Monad"
   header "Control.Monad"
   shouldBe("bind", {
     { Monad.bind({ 2, 3, 4 }, function(x)

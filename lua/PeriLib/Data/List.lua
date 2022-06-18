@@ -3,7 +3,6 @@ local Func = require "PeriLib.Data.Function"
 local Foldable = require "PeriLib.Data.Foldable"
 local Operator = require "PeriLib.Operator"
 local Prelude = require "PeriLib.Prelude"
-local Monoid = require "PeriLib.Data.Monoid"
 local Tuple = require "PeriLib.Data.Tuple"
 
 local Maybe = {}

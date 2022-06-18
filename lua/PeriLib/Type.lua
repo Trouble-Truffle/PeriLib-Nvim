@@ -8,7 +8,6 @@
 -- class is used to create new typeclasses
 
 local M = {}
-local func = require("PeriLib.Data.Function")
 
 M.type = function(name, value)
   return {
@@ -39,11 +38,26 @@ M.data = function(dataname, constructors)
   return datatype
 end
 
-M.class = function(name)
-  return { default = function(x,_)
-    error("No '" .. name .. "' instance for type: " .. x.type)
+M.typeOf = function(x)
+  if type(x) == "table" and x.type then
+    return x.type
   end
-  }
+  return type(x)
+end
+
+M.class = function(classname, functions)
+  local class = {}
+
+  for _, func in pairs(functions) do
+    class[func] = {
+      instance = { default = function(x)
+        error(string.format("No '%s' instance for type '%s'", classname, M.typeOf(x)))
+      end
+      }
+    }
+  end
+
+  return class
 end
 
 return M

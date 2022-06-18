@@ -43,7 +43,7 @@ M.listToMaybe = function(xs)
   end
 end
 
-Prelude.showInstances["Maybe"] = function(x)
+Prelude.Show.show.instance["Maybe"] = function(x)
   if M.isJust(x) then
     return "Just " .. Prelude.show(x.value.value)
   else
@@ -51,7 +51,7 @@ Prelude.showInstances["Maybe"] = function(x)
   end
 end
 
-Prelude.eqInstances["Maybe"] = function(x, y)
+Prelude.Eq.equal.instance["Maybe"] = function(x, y)
   if M.isJust(x) and M.isJust(y) then
     return Prelude.equal(x.value.value)(y.value.value)
   elseif M.isNothing(x) and M.isNothing(y) then
@@ -61,7 +61,7 @@ Prelude.eqInstances["Maybe"] = function(x, y)
   end
 end
 
-Functor.functorInstances["Maybe"] = function(f, x)
+Functor.Functor.fmap.instance["Maybe"] = function(f, x)
   if M.isJust(x) then
     return M.Just(f(x.value.value))
   else
@@ -69,7 +69,7 @@ Functor.functorInstances["Maybe"] = function(f, x)
   end
 end
 
-Applicative.applicativeInstances["Maybe"] = function(f,a,b)
+Applicative.Applicative.liftA2.instance["Maybe"] = function(f,a,b)
   if M.isJust(a) and M.isJust(b) then
     return M.Just(f(a.value.value,b.value.value))
   else
@@ -77,7 +77,7 @@ Applicative.applicativeInstances["Maybe"] = function(f,a,b)
   end
 end
 
-Applicative.alternativeInstances["Maybe"] = function(a,b)
+Applicative.Alternative.alternative.instance["Maybe"] = function(a,b)
   if M.isNothing(a) and M.isJust(b) then
     return b
   elseif M.isNothing(a) and M.isNothing(b) then
@@ -87,7 +87,7 @@ Applicative.alternativeInstances["Maybe"] = function(a,b)
   end
 end
 
-Monad.monadInstances["Maybe"] = function(a, f)
+Monad.Monad.bind.instance["Maybe"] = function(a, f)
   if M.isNothing(a) then
     return M.Nothing
   else

@@ -16,6 +16,7 @@ local M =
   gtOrE = function(x) return function(y) return x <= y end end,
   opOr = function(x) return function(y) return x or y end end,
   opAnd = function(x) return function(y) return x and y end end,
+  opNot = function(x) return not x end,
 
   -- Uncurried operators
   uncAdd = function(x,y) return x + y end,
