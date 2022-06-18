@@ -4,10 +4,13 @@ local M =
 {
   add = function(x) return function(y) return x + y end end,
   sub = function(x) return function(y) return x - y end end,
+  minuend = function(y) return function(x) return x - y end end,
   mul = function(x) return function(y) return x * y end end,
   div = function(x) return function(y) return x / y end end,
+  divisor = function(y) return function (x) return x / y end end,
   mod = function(x) return function(y) return x % y end end,
   pow = function(x) return function(y) return x ^ y end end,
+  exp = function(y) return function(x) return x ^ y end end,
   eq = function(x) return function(y) return x == y end end,
   neq = function(x) return function(y) return x ~= y end end,
   lt = function(x) return function(y) return x > y end end,

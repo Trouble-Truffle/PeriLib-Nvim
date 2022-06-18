@@ -12,6 +12,7 @@ local Maybe = require "PeriLib.Data.Maybe"
 local Foldable = require "PeriLib.Data.Foldable"
 local Applicative = require "PeriLib.Control.Applicative"
 local Monad = require "PeriLib.Control.Monad"
+local IO    = require "PeriLib.System.IO"
 
 return function()
 
@@ -86,10 +87,10 @@ return function()
   shouldBe("id", { { Func.id(3), 3 } })
   shouldBe("const", { { Func.const(2)(3), 2 } })
   shouldBe("curry", { { Func.curry(Oper.uncAdd)(2)(3), 5 } })
-
   shouldBe("uncurry", { { Func.uncurry(Oper.add)(2, 3), 5 } })
   shouldBe("on", { { Func.on(Func.uncurry(Oper.add), Oper.mul(2))(3, 3), 12 } })
   shouldBe("compose", { { Func.compose(Oper.add(2), Oper.mul(2))(3), 8 } })
+  shouldBe("application", {{ Func.application({Oper.minuend(3), Oper.add(4), Oper.mul(2)},2), 5}})
 
   header "Data.Monoid"
   shouldBe("mappend", {
@@ -156,8 +157,7 @@ return function()
     { List.all(Oper.eq(2), { 2, 2, 2, 3 }), false },
     { List.all(Oper.eq(2), { 2, 2, 2, 2 }), true },
   })
-  --IO.printLn(List.span({3,4,2,1,2,4,4,1}, Oper.lt(2)))
-  --error()
+
   shouldBe("group", {
     { List.groupBy(Oper.gt, { 2, 3, 4, 2, 1, 2, 4, 4, 1 }), { { 2, 3, 4 }, { 2 }, { 1, 2, 4, 4 }, { 1 } } },
     { List.group({ 1, 1, 1, 2, 2, 3, 2, 2 }), { { 1, 1, 1 }, { 2, 2 }, { 3 }, { 2, 2 } } },
@@ -253,4 +253,5 @@ return function()
       return Maybe.Just(x + 1)
     end), Maybe.Nothing },
   })
+
 end

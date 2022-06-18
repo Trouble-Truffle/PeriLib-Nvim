@@ -48,4 +48,12 @@ M.compose = function(f, g)
   end
 end
 
+M.application = function(funcs, x)
+  for i = #funcs, 1, -1 do
+    x = funcs[i](x)
+    print(x)
+  end
+  return x
+end
+
 return M
