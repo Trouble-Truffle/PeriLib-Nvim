@@ -22,7 +22,7 @@ M.mappend = function(mA, mB)
   end
 end
 M.mconcat = function(xs)
-  return Foldable.foldr(M.mappend, M.mempty, xs)
+  return Foldable.foldl(M.mappend, M.mempty, xs)
 end
 
 

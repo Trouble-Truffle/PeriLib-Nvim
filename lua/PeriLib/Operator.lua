@@ -14,6 +14,8 @@ local M =
   gt = function(x) return function(y) return x < y end end,
   ltOrE = function(x) return function(y) return x >= y end end,
   gtOrE = function(x) return function(y) return x <= y end end,
+  opOr = function(x) return function(y) return x or y end end,
+  opAnd = function(x) return function(y) return x and y end end,
 
   -- Uncurried operators
   uncAdd = function(x,y) return x + y end,
@@ -28,6 +30,8 @@ local M =
   uncGt = function(x,y) return x > y end,
   uncLtOrE = function(x,y) return x <= y end,
   uncGtOrE = function(x,y) return x >= y end,
+  uncOpOr = function(x,y) return x or y end,
+  uncOpAnd = function(x,y) return x and y end,
 
 }
 

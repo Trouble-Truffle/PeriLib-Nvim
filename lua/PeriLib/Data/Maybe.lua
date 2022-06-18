@@ -5,6 +5,8 @@ local Types = require("PeriLib.Type")
 local Func = require("PeriLib.Data.Function")
 local Prelude = require("PeriLib.Prelude")
 local Functor = require("PeriLib.Data.Functor")
+local Applicative = require("PeriLib.Control.Applicative")
+local Monad       = require("PeriLib.Control.Monad")
 
 for k,v in pairs(Types.data("Maybe",
                  {Just = Func.id,
@@ -51,7 +53,7 @@ end
 
 Prelude.eqInstances["Maybe"] = function(x, y)
   if M.isJust(x) and M.isJust(y) then
-    return Prelude.equal(x.value.value, y.value.value)
+    return Prelude.equal(x.value.value)(y.value.value)
   elseif M.isNothing(x) and M.isNothing(y) then
     return true
   else
@@ -64,6 +66,32 @@ Functor.functorInstances["Maybe"] = function(f, x)
     return M.Just(f(x.value.value))
   else
     return M.Nothing
+  end
+end
+
+Applicative.applicativeInstances["Maybe"] = function(f,a,b)
+  if M.isJust(a) and M.isJust(b) then
+    return M.Just(f(a.value.value,b.value.value))
+  else
+    return M.Nothing
+  end
+end
+
+Applicative.alternativeInstances["Maybe"] = function(a,b)
+  if M.isNothing(a) and M.isJust(b) then
+    return b
+  elseif M.isNothing(a) and M.isNothing(b) then
+    return M.Nothing
+  else
+    return a
+  end
+end
+
+Monad.monadInstances["Maybe"] = function(a, f)
+  if M.isNothing(a) then
+    return M.Nothing
+  else
+    return f(a.value.value)
   end
 end
 
