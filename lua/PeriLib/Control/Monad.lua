@@ -1,6 +1,7 @@
 local Type = require("PeriLib.Type")
 local Monoid = require("PeriLib.Data.Monoid")
 local Prelude= require("PeriLib.Prelude")
+local Function = require("PeriLib.Data.Function")
 
 local M = {}
 
@@ -23,6 +24,14 @@ M.bind = function(ma, f)
   else
     error("No 'Functor' instance found for type '"..type(ma).."'")
   end
+end
+
+M.join = function(x)
+  -- Since lua lacks currying, join on functions dont work
+  if type(x) == "function" then
+    return function(y) return x(y,y) end
+  end
+  return M.bind(x, Function.id)
 end
 
 return M

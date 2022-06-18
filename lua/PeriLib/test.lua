@@ -191,6 +191,10 @@ return function()
     end), { 2, 2, 3, 3, 4, 4 }, "With List" },
     { Monad.bind(Oper.add(1), Oper.uncMul)(4), 20, "With Function" },
   })
+  shouldBe("join", {
+    {Monad.join({{2,3}, {4,2}}), {2,3,4,2}},
+    {Monad.join(Oper.uncAdd)(1), 2}
+  })
 
   header "Data.Maybe"
   shouldBe("isJust", { { Maybe.isJust(Maybe.Just(1)), true } })
