@@ -57,11 +57,6 @@ return function()
     end
   end
 
-  header "Type"
-  shouldBe("typeof", {
-    {Type.typeOf(2), "number"},
-  })
-
   header "Prelude"
   shouldBe("switch", {
     { Prelude.match("Test", { Test = 3, default = 4 }), 3, "With available switch case" },
@@ -86,9 +81,9 @@ return function()
   header "Data.Function"
   shouldBe("id", { { Func.id(3), 3 } })
   shouldBe("const", { { Func.const(2)(3), 2 } })
-  shouldBe("curry", { { Func.curry(Oper.uncAdd)(2)(3), 5 } })
-  shouldBe("uncurry", { { Func.uncurry(Oper.add)(2, 3), 5 } })
-  shouldBe("on", { { Func.on(Func.uncurry(Oper.add), Oper.mul(2))(3, 3), 12 } })
+  shouldBe("curry", { { Func.curry(function (x,y) return x + y end)(2)(3), 5 } })
+  shouldBe("uncurry", { { Func.uncurry(function (x) return function(y) return x + y end end)(2,3), 5 } })
+  shouldBe("on", { { Func.on(Oper.add, Oper.mul(2))(3, 3), 12 } })
   shouldBe("compose", { { Func.compose(Oper.add(2), Oper.mul(2))(3), 8 } })
   shouldBe("application", {{ Func.application({Oper.minuend(3), Oper.add(4), Oper.mul(2)},2), 5}})
 
@@ -130,7 +125,7 @@ return function()
     { List.iota(2, 7), { 2, 3, 4, 5, 6, 7 }, "With 2 arguments" },
   })
   shouldBe("elem", { { List.elem({ 2, 3, 4, 1 }, 3), true }, { List.elem({ 2, 3, 4, 1 }, 5), false } })
-  shouldBe("zipWith", { { List.zipWith({ 1, 2, 3 }, { 4, 5, 6 }, Oper.uncAdd), { 5, 7, 9 } } })
+  shouldBe("zipWith", { { List.zipWith({ 1, 2, 3 }, { 4, 5, 6 }, Oper.add), { 5, 7, 9 } } })
   shouldBe("zip", {
     { List.zip({ 1, 2, 3 }, { 4, 5, 6 }), { { 1, 4 }, { 2, 5 }, { 3, 6 } }, "With equal length lists" },
     { List.zip({ 1, 2, 3 }, { 4, 5 }), { { 1, 4 }, { 2, 5 } }, "With different length lists" },
@@ -170,10 +165,10 @@ return function()
   shouldBe("structure", { { Tuple.structure(1, 2), { 1, 2 } } })
 
   header "Data.Foldable"
-  shouldBe("foldl", { { Foldable.foldl(Oper.uncAdd, 1, { 2, 3 }), 6 } })
-  shouldBe("foldl1", { { Foldable.foldl1(Oper.uncAdd, { 1, 2, 3 }), 6 } })
-  shouldBe("scanl", { { Foldable.scanl(Oper.uncAdd, 1, { 1, 2, 3 }), { 1, 2, 4, 7 } } })
-  shouldBe("scanl1", { { Foldable.scanl1(Oper.uncAdd, { 1, 1, 2, 3 }), { 1, 2, 4, 7 } } })
+  shouldBe("foldl", { { Foldable.foldl(Oper.add, 1, { 2, 3 }), 6 } })
+  shouldBe("foldl1", { { Foldable.foldl1(Oper.add, { 1, 2, 3 }), 6 } })
+  shouldBe("scanl", { { Foldable.scanl(Oper.add, 1, { 1, 2, 3 }), { 1, 2, 4, 7 } } })
+  shouldBe("scanl1", { { Foldable.scanl1(Oper.add, { 1, 1, 2, 3 }), { 1, 2, 4, 7 } } })
 
   header "Control.Applicative"
   shouldBe("liftA2", {
@@ -182,7 +177,7 @@ return function()
       { { 2, 3 }, { 2, 4 }, { 3, 3 }, { 3, 4 } },
       "With List",
     },
-    { Applicative.liftA2(Oper.uncMul, Oper.add(2), Oper.add(3))(1), 12, "With Function" },
+    { Applicative.liftA2(Oper.mul, Oper.add(2), Oper.add(3))(1), 12, "With Function" },
   })
   shouldBe("Alternative", {
     { Applicative.alternative({ 1, 2 }, {}), { 1, 2 }, "With Second One empty" },
@@ -196,11 +191,11 @@ return function()
     { Monad.bind({ 2, 3, 4 }, function(x)
       return { x, x }
     end), { 2, 2, 3, 3, 4, 4 }, "With List" },
-    { Monad.bind(Oper.add(1), Oper.uncMul)(4), 20, "With Function" },
+    { Monad.bind(Oper.add(1), Oper.mul)(4), 20, "With Function" },
   })
   shouldBe("join", {
     {Monad.join({{2,3}, {4,2}}), {2,3,4,2}},
-    {Monad.join(Oper.uncAdd)(1), 2}
+    {Monad.join(Oper.add)(1), 2}
   })
 
   header "Data.Maybe"
@@ -229,14 +224,20 @@ return function()
     { Prelude.uncEqual(Maybe.Nothing, Maybe.Just(1)), false, "With Just and Nothing" },
   })
 
+  shouldBe("Monoid Instance", {
+    { Monoid.mappend(Maybe.Just({2,3}), Maybe.Just({4,1})), Maybe.Just({2,3,4,1})},
+    { Monoid.mappend(Maybe.Just({2,3}), Maybe.Nothing) , Maybe.Just({2,3})},
+    { Monoid.mappend(Maybe.Nothing, Maybe.Nothing) , Maybe.Nothing},
+  })
+
   shouldBe("Functor Instance", {
     { Functor.fmap(Oper.add(2), Maybe.Just(3)), Maybe.Just(5), "With Just" },
     { Functor.fmap(Oper.add(2), Maybe.Nothing), Maybe.Nothing, "With Nothing" },
   })
 
   shouldBe("Applicative Instance", {
-    { Applicative.liftA2(Oper.uncAdd, Maybe.Just(3), Maybe.Just(3)), Maybe.Just(6) },
-    { Applicative.liftA2(Oper.uncAdd, Maybe.Nothing, Maybe.Just(2)), Maybe.Nothing },
+    { Applicative.liftA2(Oper.add, Maybe.Just(3), Maybe.Just(3)), Maybe.Just(6) },
+    { Applicative.liftA2(Oper.add, Maybe.Nothing, Maybe.Just(2)), Maybe.Nothing },
   })
 
   shouldBe("Alternative Instance", {
@@ -253,5 +254,6 @@ return function()
       return Maybe.Just(x + 1)
     end), Maybe.Nothing },
   })
+
 
 end

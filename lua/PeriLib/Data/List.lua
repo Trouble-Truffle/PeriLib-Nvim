@@ -193,16 +193,16 @@ M.zip = function(xs, ys)
 end
 
 M.sum = function(xs)
-  return Foldable.foldl(Operator.uncAdd, 0, xs)
+  return Foldable.foldl(Operator.add, 0, xs)
 end
 M.difference = function(xs)
-  return Foldable.foldr(Operator.uncSub, 0, xs)
+  return Foldable.foldr(Operator.sub, 0, xs)
 end
 M.product = function(xs)
-  return Foldable.foldl(Operator.uncMul, 1, xs)
+  return Foldable.foldl(Operator.mul, 1, xs)
 end
 M.quotient = function(xs)
-  return Foldable.foldr(Operator.uncDiv, 1, xs)
+  return Foldable.foldr(Operator.div, 1, xs)
 end
 M.maximum = function(xs)
   return Foldable.foldl1(Prelude.max, xs)
