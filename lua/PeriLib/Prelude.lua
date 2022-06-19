@@ -2,7 +2,7 @@ local M = {}
 local Type = require "PeriLib.Type"
 local Function = require "PeriLib.Data.Function"
 
-M.match = function(param, cases)
+M.case = function(param, cases)
   local case = cases[param]
   if case == nil then
     return cases.default
@@ -11,17 +11,32 @@ M.match = function(param, cases)
   end
 end
 
-M.Eq = Type.class("EQ", { "equal" })
-M.equal = function(a)
-  return function(b)
-    if Type.typeOf(a) ~= Type.typeOf(b) then
-      return false
+M.match = function(param, default, ...)
+  for _, v in ipairs({...}) do
+    if M.equal(param, v[1]) then
+      return v[2]
     end
-    return M.match(Type.typeOf(a), M.Eq.equal.instance)(a,b)
   end
+  return default
 end
-M.uncEqual = function(a, b)
-  return M.equal(a)(b)
+
+
+M.Eq = Type.class("EQ", { "equal" })
+M.equal = function(a,_b)
+  if _b then
+    if Type.typeOf(a) ~= Type.typeOf(_b) then
+      return false
+    else
+      return M.case(Type.typeOf(a), M.Eq.equal.instance)(a,_b)
+    end
+  else
+    return function (b)
+      if Type.typeOf(a) ~= Type.typeOf(b) then
+        return false
+      end
+      return M.case(Type.typeOf(a), M.Eq.equal.instance)(a,b)
+    end
+  end
 end
 
 M.Eq.equal.instance["table"] = function(a, b)
@@ -37,7 +52,7 @@ M.Eq.equal.instance["default"] = function(x,y) return x == y end
 
 M.Show = Type.class("Show", { "show" })
 M.show = function(x)
-  return M.match(Type.typeOf(x), M.Show.show.instance)(x)
+  return M.case(Type.typeOf(x), M.Show.show.instance)(x)
 end
 
 M.Show.show.instance["default"] = vim.inspect
@@ -64,7 +79,7 @@ M.Eq.equal.instance["Ord"] = function(x,y)
   return Function.on(M.equal, M.index({ "type", "type" }))(x, y)
 end
 M.compare = function(x, y)
-  return M.match(Type.typeOf(x), M.Ord.compare.instance)(x,y)
+  return M.case(Type.typeOf(x), M.Ord.compare.instance)(x,y)
 end
 
 M.Ord.compare.instance["number"] = function(x, y)
@@ -100,11 +115,11 @@ M.Ord.compare.instance["table"] = function(x, y)
 end
 
 M.max = function(a, b)
-  return M.match(M.compare(a, b).value.type, { EQ = a, GT = a, LT = b })
+  return M.case(M.compare(a, b).value.type, { EQ = a, GT = a, LT = b })
 end
 
 M.min = function(a, b)
-  return M.match(M.compare(a, b).value.type, { EQ = b, GT = b, LT = a })
+  return M.case(M.compare(a, b).value.type, { EQ = b, GT = b, LT = a })
 end
 
 return M

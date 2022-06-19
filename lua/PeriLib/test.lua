@@ -34,7 +34,7 @@ return function()
         vim.api.nvim_echo({ { "   Test: " .. x[3], "PMenu" } }, false, {})
       end
 
-      if Prelude.uncEqual(x[1], x[2]) then
+      if Prelude.equal(x[1], x[2]) then
         vim.api.nvim_echo({ { "   Pass\n", "Character" } }, false, {})
       else
         errors = errors + 1
@@ -57,18 +57,24 @@ return function()
     end
   end
 
+  IO.printLn(IO.runIO(IO.readFile("/home/truff/.local/src/sandbox/haskell/app/Main.hs")))
+
   header "Prelude"
   shouldBe("switch", {
-    { Prelude.match("Test", { Test = 3, default = 4 }), 3, "With available switch case" },
-    { Prelude.match("_", { Test = 3, default = 4 }), 4, "With default case" },
+    { Prelude.case("Test", { Test = 3, default = 4 }), 3, "With available switch case" },
+    { Prelude.case("_", { Test = 3, default = 4 }), 4, "With default case" },
   })
 
+  --shouldBe("match", {
+    --{ Prelude.match}
+  --})
+
   shouldBe("equal", {
-    { Prelude.uncEqual(3, 3), true, "With equal values" },
-    { Prelude.uncEqual(3, 4), false, "With different values" },
-    { Prelude.uncEqual(3, "3"), false, "With different types" },
-    { Prelude.uncEqual({ 1, 2 }, { 1, 2 }), true, "With equal tables" },
-    { Prelude.uncEqual({ 1, 2 }, { 1, 2, 3 }), false, "With different tables" },
+    { Prelude.equal(3, 3), true, "With equal values" },
+    { Prelude.equal(3, 4), false, "With different values" },
+    { Prelude.equal(3, "3"), false, "With different types" },
+    { Prelude.equal({ 1, 2 }, { 1, 2 }), true, "With equal tables" },
+    { Prelude.equal({ 1, 2 }, { 1, 2, 3 }), false, "With different tables" },
   })
   shouldBe("compare", {
     { Prelude.compare(3, 4), Prelude.LT },
@@ -218,10 +224,10 @@ return function()
   })
 
   shouldBe("Eq Instance", {
-    { Prelude.uncEqual(Maybe.Just(1), Maybe.Just(1)), true, "With equal Just values" },
-    { Prelude.uncEqual(Maybe.Just(1), Maybe.Just(2)), false, "With different Just values" },
-    { Prelude.uncEqual(Maybe.Nothing, Maybe.Nothing), true, "With both Nothing" },
-    { Prelude.uncEqual(Maybe.Nothing, Maybe.Just(1)), false, "With Just and Nothing" },
+    { Prelude.equal(Maybe.Just(1), Maybe.Just(1)), true, "With equal Just values" },
+    { Prelude.equal(Maybe.Just(1), Maybe.Just(2)), false, "With different Just values" },
+    { Prelude.equal(Maybe.Nothing, Maybe.Nothing), true, "With both Nothing" },
+    { Prelude.equal(Maybe.Nothing, Maybe.Just(1)), false, "With Just and Nothing" },
   })
 
   shouldBe("Monoid Instance", {

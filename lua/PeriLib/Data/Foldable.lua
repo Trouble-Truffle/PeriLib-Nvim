@@ -23,7 +23,7 @@ end
 
 M.Foldable = Type.class("Foldable", { "foldl" })
 M.foldl = function(f, z, xs)
-  return Prelude.match(Type.typeOf(xs), M.Foldable.foldl.instance)(f, z, xs)
+  return Prelude.case(Type.typeOf(xs), M.Foldable.foldl.instance)(f, z, xs)
 end
 
 M.Foldable.foldl.instance["table"] = function(f, z, xs)

@@ -10,7 +10,7 @@ M.mempty = {type = "mempty"}
 M.mappend = function(a, b)
   if a.type == "mempty" then return b
   elseif b.type == "mempty" then return a
-  else return Prelude.match(Type.typeOf(a), M.Monoid.mappend.instance)(a,b)
+  else return Prelude.case(Type.typeOf(a), M.Monoid.mappend.instance)(a,b)
   end
 end
 

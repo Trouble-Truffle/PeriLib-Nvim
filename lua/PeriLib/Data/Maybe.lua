@@ -1,14 +1,15 @@
 -- Optional Values
 local M = {}
 
-local Types = require("PeriLib.Type")
+local Type = require("PeriLib.Type")
 local Func = require("PeriLib.Data.Function")
 local Prelude = require("PeriLib.Prelude")
 local Functor = require("PeriLib.Data.Functor")
 local Applicative = require("PeriLib.Control.Applicative")
 local Monad       = require("PeriLib.Control.Monad")
+local Monoid      = require("PeriLib.Data.Monoid")
 
-for k,v in pairs(Types.data("Maybe",
+for k,v in pairs(Type.data("Maybe",
                  {Just = Func.id,
                   Nothing = 0}))
 do
@@ -35,6 +36,11 @@ M.fromMaybe = function(x, mX)
   return M.maybe(x, Func.id, mX)
 end
 
+-- Unsafe
+M.fromJust = function(x)
+  return x.value.value
+end
+
 M.listToMaybe = function(xs)
   if #xs == 0 then
     return M.Nothing
@@ -48,6 +54,18 @@ Prelude.Show.show.instance["Maybe"] = function(x)
     return "Just " .. Prelude.show(x.value.value)
   else
     return "Nothing"
+  end
+end
+
+Monoid.Monoid.mappend.instance["Maybe"] = function(x,y)
+  if M.isNothing(x) and M.isJust(y) then return y
+  elseif M.isJust(x) and M.isNothing(y)   then return x
+  elseif M.isNothing(x) and M.isNothing(y) then return M.Nothing
+  else return
+    M.Just(
+      Prelude.case(Type.typeOf(M.fromJust(x)),
+                    Monoid.Monoid.mappend.instance)(M.fromJust(x), M.fromJust(y))
+    )
   end
 end
 

@@ -6,7 +6,7 @@ local Func = require "PeriLib.Data.Function"
 
 M.Functor = Type.class("Functor", { "fmap" })
 M.fmap = function(f, x)
-  return Prelude.match(Type.typeOf(x), M.Functor.fmap.instance)(f, x)
+  return Prelude.case(Type.typeOf(x), M.Functor.fmap.instance)(f, x)
 end
 M.Functor.fmap.instance["table"] = function(f, x)
   local r = {}

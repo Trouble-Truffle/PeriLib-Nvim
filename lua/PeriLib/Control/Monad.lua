@@ -7,7 +7,7 @@ local M = {}
 
 M.Monad = Type.class("Monad", { "bind" })
 M.bind = function(a, f)
-  return Prelude.match(Type.typeOf(a), M.Monad.bind.instance)(a, f)
+  return Prelude.case(Type.typeOf(a), M.Monad.bind.instance)(a, f)
 end
 
 M.Monad.bind.instance["table"] = function(ma, f)
